@@ -19,6 +19,8 @@ public class EmployeeService {
         return employeeRepository.save(employee);
     }
 
+    
+
     // ✅ Get all employees with education details
     public List<Employee> getAllEmployees() {
         return employeeRepository.findAll();
