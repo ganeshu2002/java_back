@@ -3,6 +3,7 @@ package com.example.employeecrud.controller;
 import com.example.employeecrud.model.Employee;
 import com.example.employeecrud.service.EmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -10,39 +11,53 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/employees")
+@CrossOrigin(origins = "http://localhost:3000")
 public class EmployeeController {
 
     @Autowired
     private EmployeeService employeeService;
 
-    // Create
+    // ✅ Add Employee
     @PostMapping
-    public Employee createEmployee(@RequestBody Employee employee) {
-        return employeeService.createEmployee(employee);
+    public ResponseEntity<Employee> addEmployee(@RequestBody Employee employee) {
+        Employee savedEmployee = employeeService.addEmployee(employee);
+        return ResponseEntity.ok(savedEmployee);
     }
 
-    // Get All
+    // ✅ Get All Employees
     @GetMapping
-    public List<Employee> getAllEmployees() {
-        return employeeService.getAllEmployees();
+    public ResponseEntity<List<Employee>> getAllEmployees() {
+        List<Employee> employees = employeeService.getAllEmployees();
+        return ResponseEntity.ok(employees);
     }
 
-    // Get By ID
+    // ✅ Get Employee by ID
     @GetMapping("/{id}")
-    public Optional<Employee> getEmployeeById(@PathVariable Long id) {
-        return employeeService.getEmployeeById(id);
+    public ResponseEntity<Employee> getEmployeeById(@PathVariable Long id) {
+        Optional<Employee> employee = employeeService.getEmployeeById(id);
+        return employee.map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
-    // Update
+    // ✅ Update Employee
     @PutMapping("/{id}")
-    public Employee updateEmployee(@PathVariable Long id, @RequestBody Employee employeeDetails) {
-        return employeeService.updateEmployee(id, employeeDetails);
+    public ResponseEntity<Employee> updateEmployee(@PathVariable Long id, @RequestBody Employee employeeDetails) {
+        try {
+            Employee updatedEmployee = employeeService.updateEmployee(id, employeeDetails);
+            return ResponseEntity.ok(updatedEmployee);
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
-    // Delete
+    // ✅ Delete Employee
     @DeleteMapping("/{id}")
-    public String deleteEmployee(@PathVariable Long id) {
-        employeeService.deleteEmployee(id);
-        return "Employee with ID " + id + " deleted successfully!";
+    public ResponseEntity<Void> deleteEmployee(@PathVariable Long id) {
+        try {
+            employeeService.deleteEmployee(id);
+            return ResponseEntity.noContent().build();
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 }

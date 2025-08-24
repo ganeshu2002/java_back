@@ -14,44 +14,48 @@ public class EmployeeService {
     @Autowired
     private EmployeeRepository employeeRepository;
 
-    // Create
-    public Employee createEmployee(Employee employee) {
+    // ✅ Add a new employee with education details
+    public Employee addEmployee(Employee employee) {
         return employeeRepository.save(employee);
     }
 
-    // Get All
+    // ✅ Get all employees with education details
     public List<Employee> getAllEmployees() {
         return employeeRepository.findAll();
     }
 
-    // Get By ID
+    // ✅ Get employee by ID
     public Optional<Employee> getEmployeeById(Long id) {
         return employeeRepository.findById(id);
     }
 
-    // Update
+    // ✅ Update employee details
     public Employee updateEmployee(Long id, Employee employeeDetails) {
-        Employee emp = employeeRepository.findById(id).orElseThrow();
+        return employeeRepository.findById(id)
+                .map(employee -> {
+                    employee.setFirstName(employeeDetails.getFirstName());
+                    employee.setLastName(employeeDetails.getLastName());
+                    employee.setDob(employeeDetails.getDob());
+                    employee.setDoj(employeeDetails.getDoj());
+                    employee.setAge(employeeDetails.getAge());
+                    employee.setAddress(employeeDetails.getAddress());
+                    employee.setMobile(employeeDetails.getMobile());
+                    employee.setCity(employeeDetails.getCity());
+                    employee.setState(employeeDetails.getState());
+                    employee.setCountry(employeeDetails.getCountry());
+                    
+                    // ✅ Update education list
+                    employee.setEducation(employeeDetails.getEducation());
 
-        emp.setFirstName(employeeDetails.getFirstName());
-        emp.setLastName(employeeDetails.getLastName());
-        emp.setDob(employeeDetails.getDob());
-        emp.setDoj(employeeDetails.getDoj());
-        emp.setAge(employeeDetails.getAge());
-        emp.setAddress(employeeDetails.getAddress());
-        emp.setMobile(employeeDetails.getMobile());
-        emp.setCity(employeeDetails.getCity());
-        emp.setState(employeeDetails.getState());
-        emp.setCountry(employeeDetails.getCountry());
-        emp.setTenth(employeeDetails.getTenth());
-        emp.setTwelfth(employeeDetails.getTwelfth());
-        emp.setGraduation(employeeDetails.getGraduation());
-
-        return employeeRepository.save(emp);
+                    return employeeRepository.save(employee);
+                }).orElseThrow(() -> new RuntimeException("Employee not found with ID: " + id));
     }
 
-    // Delete
+    // ✅ Delete employee by ID
     public void deleteEmployee(Long id) {
+        if (!employeeRepository.existsById(id)) {
+            throw new RuntimeException("Employee not found with ID: " + id);
+        }
         employeeRepository.deleteById(id);
     }
 }
