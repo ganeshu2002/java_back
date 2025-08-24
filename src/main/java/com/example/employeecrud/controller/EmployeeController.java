@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -58,6 +59,20 @@ public class EmployeeController {
             return ResponseEntity.noContent().build();
         } catch (RuntimeException e) {
             return ResponseEntity.notFound().build();
+        }
+    }
+
+    // ✅ Find Employees by Name and DOB
+    @GetMapping("/find")
+    public ResponseEntity<List<Employee>> findEmployeesByNameAndDob(
+            @RequestParam String firstName,
+            @RequestParam String dob) {
+        try {
+            LocalDate dateOfBirth = LocalDate.parse(dob);
+            List<Employee> employees = employeeService.findEmployeesByNameAndDob(firstName, dateOfBirth);
+            return ResponseEntity.ok(employees);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
         }
     }
 }

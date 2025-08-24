@@ -5,6 +5,7 @@ import com.example.employeecrud.repository.EmployeeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -57,5 +58,10 @@ public class EmployeeService {
             throw new RuntimeException("Employee not found with ID: " + id);
         }
         employeeRepository.deleteById(id);
+    }
+
+    // ✅ Find employees by firstName and dob
+    public List<Employee> findEmployeesByNameAndDob(String firstName, LocalDate dob) {
+        return employeeRepository.findByFirstNameAndDob(firstName, dob);
     }
 }
